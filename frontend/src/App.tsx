@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import ProfileForm from "./components/ProfileForm";
+interface Profile {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  city: string;
+  pincode: string;
 }
 
-export default App
+const App = () => {
+  const { loginWithRedirect, logout, isAuthenticated, isLoading, user } =
+    useAuth0();
+  const [profile, setProfile] = useState<Profile>({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    city: "",
+    pincode: "",
+  });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user?.email) {
+        const res = await fetch(`/api/user-profile/${user.email}`);
+        const data = await res.json();
+        setProfile(data);
+      }
+    };
+
+    if (isAuthenticated) fetchProfile();
+  }, [isAuthenticated, user]);
+
+  if (isLoading || (isAuthenticated && !profile)) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {!isAuthenticated ? (
+        <div className="flex justify-center items-center h-screen">
+          <button
+            className="bg-blue-600 text-white px-6 py-3 rounded"
+            onClick={() => loginWithRedirect()}
+          >
+            Log In
+          </button>
+        </div>
+      ) : (
+        <div className="p-6">
+          <div className="text-right">
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded"
+              onClick={() =>
+                logout({ logoutParams: { returnTo: window.location.origin } })
+              }
+            >
+              Logout
+            </button>
+          </div>
+          <ProfileForm initialData={profile} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
