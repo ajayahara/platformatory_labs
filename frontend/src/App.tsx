@@ -7,6 +7,9 @@ interface Profile {
   phone: string;
   city: string;
   pincode: string;
+  email?: string;
+  picture?: string;
+  fullName?: string;
 }
 
 const App = () => {
@@ -18,6 +21,9 @@ const App = () => {
     phone: "",
     city: "",
     pincode: "",
+    email: "",
+    picture: "",
+    fullName: "",
   });
 
   useEffect(() => {
@@ -35,6 +41,8 @@ const App = () => {
   if (isLoading || (isAuthenticated && !profile)) {
     return <div className="text-center mt-10">Loading...</div>;
   }
+
+  console.log(user);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -59,6 +67,7 @@ const App = () => {
               Logout
             </button>
           </div>
+          {/* <ProfileForm initialData={profile} /> */}
           <ProfileForm initialData={profile} />
         </div>
       )}
