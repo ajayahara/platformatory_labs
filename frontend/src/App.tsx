@@ -29,8 +29,10 @@ const App = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (user?.email) {
-        const res = await fetch(`/api/user-profile/${user.email}`);
+        console.log(user.email)
+        const res = await fetch(`http://localhost:5000/api/user/${user.email}`);
         const data = await res.json();
+        console.log(data)
         setProfile(data);
       }
     };
@@ -41,8 +43,6 @@ const App = () => {
   if (isLoading || (isAuthenticated && !profile)) {
     return <div className="text-center mt-10">Loading...</div>;
   }
-
-  console.log(user);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -67,7 +67,6 @@ const App = () => {
               Logout
             </button>
           </div>
-          {/* <ProfileForm initialData={profile} /> */}
           <ProfileForm initialData={profile} />
         </div>
       )}

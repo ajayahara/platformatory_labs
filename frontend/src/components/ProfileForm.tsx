@@ -17,9 +17,33 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
+  const handleSubmit = async () => {
+    if (!profile.email) {
+      alert("Email is required to update profile.");
+      return;
+    }
 
-  const handleSubmit = () => {
-    console.log("Updated profile:", profile);
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/user/${profile.email}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(profile),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      const result = await res.json();
+      alert("✅ Profile update started via Temporal!");
+      console.log("Workflow result:", result);
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("❌ Could not update profile");
+    }
   };
 
   return (
@@ -40,10 +64,17 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
 
         {/* Form */}
         <div className="p-8 md:col-span-2">
-          <h2 className="text-2xl font-bold mb-6 border-b pb-2 text-red-900">Edit Profile</h2>
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
+          <h2 className="text-2xl font-bold mb-6 border-b pb-2 text-red-900">
+            Edit Profile
+          </h2>
+          <form
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name
+              </label>
               <input
                 type="text"
                 name="firstName"
@@ -53,7 +84,9 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
               <input
                 type="text"
                 name="lastName"
@@ -63,7 +96,9 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
+              </label>
               <input
                 type="text"
                 name="phone"
@@ -73,7 +108,9 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                City
+              </label>
               <input
                 type="text"
                 name="city"
@@ -83,7 +120,9 @@ const ProfileForm = ({ initialData }: { initialData: ProfileData }) => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pincode
+              </label>
               <input
                 type="text"
                 name="pincode"
